@@ -17,6 +17,9 @@ module NavigationHelpers
       '/'
     when /^the new article page$/
       '/admin/content/new'
+    when /^the (edit|details) page for "(.*)"$/
+      article = Content.find_by_title($2)
+      $1 == "edit" ? admin_content_path(article) : admin_content_path(article)
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
