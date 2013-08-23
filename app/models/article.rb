@@ -80,6 +80,23 @@ class Article < Content
     Article.exists?({:parent_id => self.id})
   end
 
+  def merge_with another_article
+    article = find_article_for_merge another_article
+    unless articles_exist_and_are_not_equal?(self, article)
+      new_article = Article.create({
+        body: body + article.body,
+        comments: comments + article.comments,
+        title: title,
+        published: true,
+        user_id: article.user_id
+      })
+      #self.reload.destroy && article.reload.destroy
+      new_article
+    else
+      nil
+    end
+  end
+
   attr_accessor :draft, :keywords
 
   has_state(:state,
@@ -417,6 +434,18 @@ class Article < Content
   end
 
   protected
+
+  def articles_exist_and_are_not_equal?(article1, article2)
+    !Article.exists?(article1.id) || !Article.exists?(article2.id) || article1.id.equal?(article2.id)
+  end
+
+  def find_article_for_merge(other_article)
+    if other_article.class == Article
+      other_article
+    else
+      Article.find_by_id(other_article.to_i) || Article.new
+    end
+  end
 
   def set_published_at
     if self.published and self[:published_at].nil?

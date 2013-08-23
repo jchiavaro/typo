@@ -61,6 +61,18 @@ Factory.define :article do |a|
   a.allow_pings true
 end
 
+Factory.define :another_article, :parent => :article do |a|
+  a.title 'Another article'
+  a.body 'This is the second article to merge'
+  a.permalink 'another-article'
+  a.published_at '2005-01-01 02:00:00'
+  a.updated_at { Factory.next(:time) }
+  a.user { some_user }
+  a.allow_comments true
+  a.published true
+  a.allow_pings true
+end
+
 Factory.define :unpublished_article, :parent => :article do |a|
   a.published_at nil
   a.published false

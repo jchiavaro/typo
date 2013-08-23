@@ -18,9 +18,11 @@ module NavigationHelpers
     when /^the new article page$/
       '/admin/content/new'
     when /^the (edit|details) page for "(.*)"$/
-      article = Content.find_by_title($2)
-      $1 == "edit" ? admin_content_path(article) : admin_content_path(article)
-
+      article = Article.find_by_title($2)
+      #$1 == "edit" ? admin_content_path(article) : admin_content_path(article)
+      "/admin/content/edit/#{article.id}"
+    when /^the latest article page$/
+      Article.order(:created_at).last.permalink_url(nil, true)
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #

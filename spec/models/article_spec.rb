@@ -598,6 +598,35 @@ describe Article do
     end
   end
 
+  describe "merge_with" do
+    before do
+      @article = Factory(:article)
+      @another_article = Factory(:another_article)
+    end
+    
+    subject { @article.merge_with(@another_article.id) }
+    
+    it "should contain the text of both articles" do
+      subject.body.should include(@article.body, @another_article.body)
+    end
+
+    it "should contain comments of both articles" do
+      subject.comments.should include(*@article.comments, *@another_article.comments)
+    end
+
+    it "should have one author" do
+      subject.user.firstname.should == @article.user.firstname
+    end
+
+    it "should have one title" do
+      subject.title.should == @article.title
+    end
+
+    it "should not merge the same article" do
+      @article.merge_with(@article.id).should be nil
+    end
+  end
+
   describe "#get_or_build" do
     context "when no params given" do
       before(:each) do

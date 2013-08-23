@@ -622,6 +622,32 @@ describe Admin::ContentController do
     it_should_behave_like 'new action'
     it_should_behave_like 'destroy action'
 
+    describe 'merge action' do
+
+      context "non-admin user" do
+        before :each do
+          @another_article = Factory(:another_article, :user => @user)
+        end
+
+        it "should prevent to merge" do
+          get :merge, 'id' => @article.id, :merge_with => @another_article.id
+          response.should redirect_to(:action => 'index')
+        end
+      end
+      context "admin user" do
+        before :each do
+          @admin_user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_admin))
+          @another_article = Factory(:another_article, :user => @admin_user)
+          request.session = { :user => @admin_user.id }
+        end
+
+        it "should merge articles" do
+          get :merge, 'id' => @article.id, :merge_with => @another_article.id
+          response.should_not redirect_to(:action => 'index')
+        end
+      end
+    end
+
     describe 'edit action' do
 
       it "should redirect if edit article doesn't his" do
